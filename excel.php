@@ -3,12 +3,18 @@ require 'vendor/autoload.php'; // Composer orqali o'rnatilgan kutubxonani chaqir
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+$host = 'mysql-xursanov-test.alwaysdata.net'; // Alwaysdata MySQL host
+$username = '392172_jasur'; // MySQL foydalanuvchi nomi
+$password = 'jasur2003'; // MySQL foydalanuvchi paroli
+$dbname = 'xursanov-test_base'; // Ma'lumotlar bazasi nomi
+
 try {
-    // SQLite baza fayliga ulanish
-    $pdo = new PDO('sqlite:base.db');
+    // MySQL ulanishi
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    echo "MySQL ulanishi muvaffaqiyatli!";
 } catch (PDOException $e) {
-    echo "Baza bilan ulanishda xatolik: " . $e->getMessage();
+    echo "Ulanishda xatolik: " . $e->getMessage();
     exit;
 }
 
@@ -24,7 +30,7 @@ if (isset($_FILES['excel_file']) && $_FILES['excel_file']['error'] === UPLOAD_ER
     array_shift($rows);
 
     // Excel faylidan olingan ma'lumotlarni bazaga kiritish
-    $stmt = $pdo->prepare("INSERT INTO questions (title, a_variant, b_variant, c_variant, d_variant, correct_answer, test_number, key) 
+    $stmt = $pdo->prepare("INSERT INTO questions (title, a_variant, b_variant, c_variant, d_variant, correct_answer, test_number, `key`) 
                            VALUES (:title, :a_variant, :b_variant, :c_variant, :d_variant, :correct_answer, :test_number, :key)");
 
     foreach ($rows as $row) {
@@ -48,7 +54,6 @@ if (isset($_FILES['excel_file']) && $_FILES['excel_file']['error'] === UPLOAD_ER
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,7 +63,7 @@ if (isset($_FILES['excel_file']) && $_FILES['excel_file']['error'] === UPLOAD_ER
 </head>
 <body>
 
-    <h1>Excel Faylini SQLite Bazasiga Yuklash</h1>
+    <h1>Excel Faylini MySQL Bazasiga Yuklash</h1>
     
     <form action="excel.php" method="POST" enctype="multipart/form-data">
         <label for="excel_file">Excel faylini tanlang:</label>
